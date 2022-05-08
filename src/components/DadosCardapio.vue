@@ -8,10 +8,8 @@
                     <img :src="item.src" alt="">
                     <h4>R${{ item.preco }}</h4>
                     <ul v-show='categorySelect === "pizzas"'>
-                        <li v-for="(recheio, index) in item.ingredientes" :key="index">
+                        <li v-for="recheio in item.ingredientes" :key="recheio">
                             {{ recheio }}
-                            <span v-if="index < item.ingredientes.length - 1">,</span>
-                            <span v-else>.</span>
                         </li>
                     </ul>
                     <button class="cart-add-btn" @click.prevent="addCart(item.tipo, item.preco),reduzir()">Adicionar ao Carrinho <ion-icon name="cart"></ion-icon></button>
