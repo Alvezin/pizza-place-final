@@ -16,17 +16,17 @@
                     <h3>{{ item.tipo }}</h3>
                     <img :src="item.src" alt="">
                     <h4>R${{ item.preco }}</h4>
-                    <ul v-show='categorySelect === "pizzas"'>
+                    <ul v-show='state.categorySelect === "pizzas"'>
                         <li v-for="recheio in item.ingredientes" :key="recheio">
                             {{ recheio }}
                         </li>
                     </ul>
-                    <button class="cart-add-btn" @click.prevent="addCart(item.tipo, item.preco),reduzir()">Adicionar ao Carrinho <ion-icon name="cart"></ion-icon></button>
+                    <button class="cart-add-btn" @click.prevent="addCart(item.tipo, item.preco)">Adicionar ao Carrinho <ion-icon name="cart"></ion-icon></button>
                 </div>
             </div>
       </section>
       <section class="carrinho">
-          <cart-component :cartList="state.cartItens" :somaValue="state.valorFinal" :arraySoma="state.somaValue" @removed="removeFromCart($event)" @clean="cleanPedidos" />
+          <cart-component :cartList="state.cartItens" :arraySoma="state.somaValue" @removed="removeFromCart($event)" @clean="cleanPedidos" />
       </section>
   </section>
 </template>
@@ -45,7 +45,6 @@ export default {
       data: null,
       cartItens: [],
       somaValue: [],
-      valorFinal: null,
       categorySelect: null
     })
 
@@ -54,6 +53,7 @@ export default {
       const res = await req.json()
       state.data = res
     }
+
     function addCart (item, preco) {
       state.cartItens.push(
         {
@@ -62,11 +62,6 @@ export default {
         }
       )
       state.somaValue.push(Number(preco))
-    }
-    function reduzir () {
-      state.valorFinal = state.somaValue.reduce((a, b) => {
-        return a + b
-      }, 0)
     }
 
     function removeFromCart (e) {
@@ -77,7 +72,6 @@ export default {
     function cleanPedidos () {
       state.somaValue = []
       state.cartItens = []
-      state.valorFinal = null
     }
 
     watch(
@@ -90,7 +84,6 @@ export default {
     return {
       state,
       addCart,
-      reduzir,
       removeFromCart,
       cleanPedidos
     }

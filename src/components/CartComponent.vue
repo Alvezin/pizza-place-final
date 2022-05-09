@@ -16,20 +16,17 @@
 
 <script>
 import { reactive } from '@vue/reactivity'
-import { onUpdated } from '@vue/runtime-core'
+import { watch } from '@vue/runtime-core'
 export default {
   name: 'CartComponent',
   props: {
     cartList: Array,
-    somaValue: Number,
     arraySoma: Array
   },
   setup (props, { emit }) {
     const state = reactive({
-      priceArrayFromProps: null,
-      cartListFromProp: null,
-      somaValueFromProp: null,
-      arraySomaFromProp: null,
+      priceArrayFromProps: [],
+      cartListFromProp: [],
       soma: null,
       nome: null,
       msg: null
@@ -37,21 +34,24 @@ export default {
 
     function getDataFromProp () {
       state.priceArrayFromProps = [...props.arraySoma]
+      reduzir()
+      state.cartListFromProp = [...props.cartList]
+    }
+    function reduzir () {
       state.soma = state.priceArrayFromProps.reduce((a, b) => {
         return a + b
       }, 0)
-      state.cartListFromProp = [...props.cartList]
-      state.somaValueFromProp = props.somaValue
-      state.arraySomaFromProp = [...props.arraySoma]
     }
-
+    watch(() => props.cartList, () => {
+      return getDataFromProp()
+    }, {
+      deep: true
+    })
     function cleanPedidos () {
       state.nome = null
       state.soma = null
       state.priceArrayFromProps = null
       state.cartListFromProp = null
-      state.somaValueFromProp = null
-      state.arraySomaFromProp = null
       emit('clean')
     }
 
@@ -61,10 +61,6 @@ export default {
         state.msg = null
       }, 5000)
     }
-
-    onUpdated(() => {
-      getDataFromProp()
-    })
 
     function removeFromCart (index) {
       emit('removed', index)
