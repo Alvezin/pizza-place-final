@@ -1,7 +1,16 @@
 <template>
   <section class="template">
+      <div class='data'>
+        <label for="categoria">Categoria: </label>
+        <select name="" id="categoria" v-model="state.categorySelect" >
+          <option value="" >Selecione a categoria</option>
+          <option value="pizzas" >Pizzas</option>
+          <option value="bebidas">Bebidas</option>
+        </select>
+      </div>
+
       <section class="itens">
-            <p v-show="categorySelect == '' || categorySelect == null" class="msg">Os dados aparecerão aqui</p>
+            <p v-show="state.categorySelect == '' || state.categorySelect == null" class="msg">Os dados aparecerão aqui</p>
             <div class="data-container" v-for="item in state.data" :key='item.id' >
                 <div>
                     <h3>{{ item.tipo }}</h3>
@@ -28,22 +37,20 @@ import { reactive } from '@vue/reactivity'
 import { watch } from '@vue/runtime-core'
 export default {
   name: 'DadosCardapio',
-  props: {
-    categorySelect: String
-  },
   components: {
     CartComponent
   },
-  setup (props) {
+  setup () {
     const state = reactive({
       data: null,
       cartItens: [],
       somaValue: [],
-      valorFinal: null
+      valorFinal: null,
+      categorySelect: null
     })
 
     async function getSearch () {
-      const req = await fetch(`http://localhost:3000/${props.categorySelect}`)
+      const req = await fetch(`http://localhost:3000/${state.categorySelect}`)
       const res = await req.json()
       state.data = res
     }
@@ -74,7 +81,7 @@ export default {
     }
 
     watch(
-      () => props.categorySelect,
+      () => state.categorySelect,
       () => {
         getSearch()
       }
@@ -95,9 +102,17 @@ export default {
     .template{
         display: grid;
         grid-template-areas:
+        "data data"
         "item cart"
         "item cart";
         grid-template-columns: 60% 40%;
+        & .data{
+          grid-area: data;
+          & #categoria{
+            padding: 2px;
+            margin-top: 3px;
+          }
+        }
         & .itens{
             text-align: center;
             overflow-y: scroll;
